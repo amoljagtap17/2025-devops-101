@@ -22,6 +22,7 @@ import { PostsModule } from './posts/posts.module';
         database: configService.get<string>('DB_DATABASE', 'posts'),
         entities: [Post],
         synchronize: true,
+        retryAttempts: 0,
       }),
       inject: [ConfigService],
     }),
