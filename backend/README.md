@@ -1,26 +1,3 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
@@ -57,42 +34,99 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Deployment
+## Docker Deployment
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+This section provides instructions for running the backend application using Docker containers with PostgreSQL database.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Prerequisites
+
+- Docker installed on your system
+- Docker daemon running
+
+### Step 1: Create Docker Network
+
+Create a custom Docker network to enable communication between containers:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+$ docker network create aj-network
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Step 2: Run PostgreSQL Container
 
-## Resources
+Start a PostgreSQL container with the required environment variables:
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+$ docker run --name postgres --network aj-network -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=posts -p 5432:5432 -d postgres
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+**Command breakdown:**
 
-## Support
+- `--name postgres`: Names the container "postgres"
+- `--network aj-network`: Connects container to our custom network
+- `-e POSTGRES_*`: Sets environment variables for database configuration
+- `-p 5432:5432`: Maps host port 5432 to container port 5432
+- `-d`: Runs container in detached mode
+- `postgres`: Uses the official PostgreSQL Docker image
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Step 3: Build Backend Image
 
-## Stay in touch
+Build the Docker image for the backend application:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+$ docker build -t backend .
+```
 
-## License
+### Step 4: Run Backend Container
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Start the backend container with database connection configuration:
+
+```bash
+$ docker run --network aj-network --name backend -e DB_HOST=postgres -p 3000:3000 -d backend
+```
+
+**Command breakdown:**
+
+- `--network aj-network`: Connects to the same network as PostgreSQL
+- `--name backend`: Names the container "backend"
+- `-e DB_HOST=postgres`: Sets database host to PostgreSQL container name
+- `-p 3000:3000`: Maps host port 3000 to container port 3000
+- `-d`: Runs container in detached mode
+- `backend`: Uses our built backend image
+
+### Optional: Connect Existing Containers to Network
+
+If you already have running containers, you can connect them to the network:
+
+```bash
+# Connect backend container to the network
+$ docker network connect aj-network backend
+
+# Connect postgres container to the network
+$ docker network connect aj-network postgres
+```
+
+### Verify Deployment
+
+- Backend API: http://localhost:3000
+- Health Check: http://localhost:3000/health
+- Posts API: http://localhost:3000/posts
+
+### Useful Docker Commands
+
+```bash
+# View running containers
+$ docker ps
+
+# View container logs
+$ docker logs backend
+$ docker logs postgres
+
+# Stop containers
+$ docker stop backend postgres
+
+# Remove containers
+$ docker rm backend postgres
+
+# Remove network
+$ docker network rm aj-network
+```
