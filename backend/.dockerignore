@@ -4,3 +4,7 @@ dist
 *.md
 .git
 .env
+Dockerfile
+DockerfilePlain
+examples.http
+.dockerignore
