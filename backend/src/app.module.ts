@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { HealthModule } from './health/health.module';
 import { Post } from './posts/entities/post.entity';
 import { PostsModule } from './posts/posts.module';
 
@@ -24,6 +25,7 @@ import { PostsModule } from './posts/posts.module';
       }),
       inject: [ConfigService],
     }),
+    HealthModule,
   ],
   controllers: [],
   providers: [],
