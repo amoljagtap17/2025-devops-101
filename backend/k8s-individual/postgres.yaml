@@ -3,17 +3,17 @@ kind: StatefulSet
 metadata:
   name: postgres-statefulset
   labels:
-    app: postgres
+    app: postgres-db
 spec:
-  serviceName: postgresdb
+  serviceName: postgres-service
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: postgres-db
   template:
     metadata:
       labels:
-        app: postgres
+        app: postgres-db
     spec:
       containers:
         - name: postgres
