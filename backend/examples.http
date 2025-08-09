@@ -1,17 +1,28 @@
+# Environment Variables
+# @baseUrl = http://localhost:3000
+@baseUrl = http://localhost:30001/api
+# @baseUrl = https://your-backend.example.com  # For Production
+
+### Health Check
+GET {{baseUrl}}/health
+Content-Type: application/json
+
+###
+
 ### Get all posts
-GET http://localhost:3000/api/posts
+GET {{baseUrl}}/posts
 Content-Type: application/json
 
 ###
 
 ### Get a specific post by ID
-GET http://localhost:3000/api/posts/550e8400-e29b-41d4-a716-446655440000
+GET {{baseUrl}}/posts/550e8400-e29b-41d4-a716-446655440000
 Content-Type: application/json
 
 ###
 
 ### Create a new post
-POST http://localhost:3000/api/posts
+POST {{baseUrl}}/posts
 Content-Type: application/json
 
 {
@@ -22,7 +33,7 @@ Content-Type: application/json
 ###
 
 ### Update a post
-PATCH http://localhost:3000/api/posts/550e8400-e29b-41d4-a716-446655440000
+PATCH {{baseUrl}}/posts/550e8400-e29b-41d4-a716-446655440000
 Content-Type: application/json
 
 {
@@ -32,8 +43,66 @@ Content-Type: application/json
 
 ###
 
+### Update a post (partial update - title only)
+PATCH {{baseUrl}}/posts/550e8400-e29b-41d4-a716-446655440000
+Content-Type: application/json
+
+{
+  "title": "Only Title Updated"
+}
+
+###
+
+### Update a post (partial update - content only)
+PATCH {{baseUrl}}/posts/550e8400-e29b-41d4-a716-446655440000
+Content-Type: application/json
+
+{
+  "content": "Only content has been updated here."
+}
+
+###
+
 ### Delete a post
-DELETE http://localhost:3000/api/posts/550e8400-e29b-41d4-a716-446655440000
+DELETE {{baseUrl}}/posts/550e8400-e29b-41d4-a716-446655440000
 Content-Type: application/json
 
 ###
+
+### Create another post example
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "title": "Another Post Example",
+  "content": "This is another example of creating a post with different content to test the API."
+}
+
+###
+
+### Test validation - Create post without title (should fail)
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "content": "This post has no title and should fail validation."
+}
+
+###
+
+### Test validation - Create post without content (should fail)
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "title": "Post without content"
+}
+
+###
+
+### Test validation - Create empty post (should fail)
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+}
