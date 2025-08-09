@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
     - name: backend
-      image: backend:latest
+      image: backend:1.0.0
       imagePullPolicy: Never
       resources:
         requests:
